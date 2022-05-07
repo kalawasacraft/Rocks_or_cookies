@@ -29,7 +29,7 @@ public class GameManager : MonoBehaviour
         CameraZoom.SetZoom(false);
     }
 
-    private void FinishGame()
+    public static void FinishGame()
     {
         CameraZoom.SetZoom(true);
     }

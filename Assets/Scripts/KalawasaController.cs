@@ -26,6 +26,7 @@ public class KalawasaController : MonoBehaviour
     private string _happyAnimationTriggerName = "Happy";
     private string _hitAnimationTriggerName = "Hit";
     private string _deathAnimationTriggerName = "Death";
+    private string _tagDeathName = "Death";
 
     void Awake()
     {
@@ -40,9 +41,6 @@ public class KalawasaController : MonoBehaviour
     {
         if (_isInit) {
 
-            if (Input.GetButtonDown("Fire1")) {
-                Debug.Log("Impulse Go!!!");
-            }
         }
     }
 
@@ -60,8 +58,6 @@ public class KalawasaController : MonoBehaviour
                 _verticalInput = 0;
             }
             _rigidbody.AddForce(new Vector2(_horizontalInput, _verticalInput) * _navigationForce, ForceMode2D.Impulse);
-
-            Debug.Log(_rigidbody.velocity);
         }
     }
 
@@ -78,11 +74,26 @@ public class KalawasaController : MonoBehaviour
         } else if (_verticalInput < 0) {
             navigatorDown.Play();
         }
+
+        if (_animator.GetCurrentAnimatorStateInfo(0).IsTag(_tagDeathName)) {
+            if (_isInit) {
+                GameManager.FinishGame();
+                // exec gameMAnager Finishgame
+            }
+            _isInit = false;
+        }
     }
 
     public static void Init()
     {
         Instance._animator.SetTrigger(Instance._readyAnimationTriggerName);
+    }
+
+    public void HitJunk()
+    {
+        if (_isInit) {
+            _animator.SetTrigger(_hitAnimationTriggerName);
+        }
     }
 
     public static Transform GetPlayerTransform()
