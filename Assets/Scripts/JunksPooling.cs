@@ -8,6 +8,7 @@ public class JunksPooling : MonoBehaviour
 
     public GameObject prefab;
     [SerializeField] private int _amount;
+    [SerializeField] private float _apertureValue;
     [SerializeField] private Vector2 _rangeSpeedRotation;
     [SerializeField] private Vector2 _rangeMoveForce;
     [SerializeField] private Vector2 _rangeInstantiateGap;
@@ -62,7 +63,7 @@ public class JunksPooling : MonoBehaviour
         junk.transform.position = newPositionDir.Item1;
         junk.GetComponent<JunkController>().Init(Random.Range(_rangeSpeedRotation[0], _rangeSpeedRotation[1]),
                                                 Random.Range(_rangeMoveForce[0], _rangeMoveForce[1]),
-                                                newPositionDir.Item2); // calculate direction
+                                                newPositionDir.Item2);
 
         Invoke("GetJunkFromPool", Random.Range(_rangeInstantiateGap[0], _rangeInstantiateGap[1]));
     }
@@ -76,22 +77,22 @@ public class JunksPooling : MonoBehaviour
             case 0:
                 bottomLeft = new Vector2(0, Screen.height + _offCameraDistance);
                 topRight = new Vector2(Screen.width, Screen.height + _offCameraDistance + 1);
-                direction = new Vector2(Random.Range(-0.5f, 0.5f), -1f);
+                direction = new Vector2(Random.Range(-_apertureValue, _apertureValue), -1f);
                 break;
             case 1:
                 bottomLeft = new Vector2(Screen.width + _offCameraDistance, 0);
                 topRight = new Vector2(Screen.width + _offCameraDistance + 1, Screen.height);
-                direction = new Vector2(-1f, Random.Range(-0.5f, 0.5f));
+                direction = new Vector2(-1f, Random.Range(-_apertureValue, _apertureValue));
                 break;
             case 2:
                 bottomLeft = new Vector2(0, 0 - _offCameraDistance);
                 topRight = new Vector2(Screen.width, 0 - _offCameraDistance + 1);
-                direction = new Vector2(Random.Range(-0.5f, 0.5f), 1f);
+                direction = new Vector2(Random.Range(-_apertureValue, _apertureValue), 1f);
                 break;
             default:
                 bottomLeft = new Vector2(0 - _offCameraDistance, 0);
                 topRight = new Vector2(0 + _offCameraDistance + 1, Screen.height);
-                direction = new Vector2(1f, Random.Range(-0.5f, 0.5f));
+                direction = new Vector2(1f, Random.Range(-_apertureValue, _apertureValue));
                 break;
         }
 

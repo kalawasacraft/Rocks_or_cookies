@@ -63,30 +63,34 @@ public class KalawasaController : MonoBehaviour
 
     void LateUpdate()
     {
-        if (_horizontalInput > 0) {
-            navigatorRight.Play();
-        } else if (_horizontalInput < 0) {
-            navigatorLeft.Play();
-        }
-
-        if (_verticalInput > 0) {
-            navigatorTop.Play();
-        } else if (_verticalInput < 0) {
-            navigatorDown.Play();
-        }
-
-        if (_animator.GetCurrentAnimatorStateInfo(0).IsTag(_tagDeathName)) {
-            if (_isInit) {
-                GameManager.FinishGame();
-                // exec gameMAnager Finishgame
+        if (_isInit) {
+            if (_horizontalInput > 0) {
+                navigatorRight.Play();
+            } else if (_horizontalInput < 0) {
+                navigatorLeft.Play();
             }
-            _isInit = false;
+
+            if (_verticalInput > 0) {
+                navigatorTop.Play();
+            } else if (_verticalInput < 0) {
+                navigatorDown.Play();
+            }
+
+            if (_animator.GetCurrentAnimatorStateInfo(0).IsTag(_tagDeathName)) {
+                GameManager.FinishGame();
+                _isInit = false;
+            }
         }
     }
 
     public static void Init()
     {
         Instance._animator.SetTrigger(Instance._readyAnimationTriggerName);
+    }
+
+    public static bool GetIsInit()
+    {
+        return Instance._isInit;
     }
 
     public void HitJunk()
@@ -104,5 +108,6 @@ public class KalawasaController : MonoBehaviour
     public void Initiate()
     {
         _isInit = true;
+        GameManager.BeginTimer();
     }
 }

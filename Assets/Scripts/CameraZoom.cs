@@ -20,6 +20,14 @@ public class CameraZoom : MonoBehaviour
         _vCam = GetComponent<CinemachineVirtualCamera>();
     }
 
+    void Update ()
+    {
+        if (_zoomActive) {
+            Transform _playerTransform = KalawasaController.GetPlayerTransform();
+            transform.position = new Vector3(_playerTransform.position.x, _playerTransform.position.y - 1f, Instance.transform.position.z);
+        }
+    }
+
     void LateUpdate()
     {
         if (_zoomActive) {
@@ -34,10 +42,6 @@ public class CameraZoom : MonoBehaviour
         Instance._zoomActive = value;
 
         if (Instance._zoomActive) {
-            
-            Transform _playerTransform = KalawasaController.GetPlayerTransform();
-
-            Instance.transform.position = new Vector3(_playerTransform.position.x, _playerTransform.position.y - 1f, Instance.transform.position.z);
             Instance._vCam.Follow = null;
         } else {
             Instance._vCam.Follow = KalawasaController.GetPlayerTransform();
