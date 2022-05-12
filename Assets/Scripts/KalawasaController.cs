@@ -18,6 +18,7 @@ public class KalawasaController : MonoBehaviour
     private Animator _animator;
     private Rigidbody2D _rigidbody;
 
+    private int _chargeValue = -1;
     private bool _isInit = false;
     private float _horizontalInput;
     private float _verticalInput;
@@ -103,6 +104,16 @@ public class KalawasaController : MonoBehaviour
     public static Transform GetPlayerTransform()
     {
         return Instance.transform;
+    }
+
+    public static int GetChargeValue()
+    {
+        return Instance._chargeValue;
+    }
+
+    public static void SetChargeValue(int value)
+    {
+        Instance._chargeValue = value;
     }
 
     public void Initiate()
