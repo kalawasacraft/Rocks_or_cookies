@@ -6,23 +6,27 @@ public class ChargeSpot : MonoBehaviour
 {
     public GameObject charge;
 
+    [SerializeField] private float _magneticForce;
     [SerializeField] private List<Material> _chargesParticles;
     [SerializeField] private List<Color> _colorChargesParticles;
     [SerializeField] private bool _isOnlySpot;
     
-    private int _chargeValue;
-    //private bool _insideSpot;
+    private int _chargeValue = -1;
 
     private Collider2D _collider;
+    private SpriteRenderer _sprite;
 
     private string _tagPlayerName = "Player";
 
     void Awake()
     {
         _collider = GetComponent<Collider2D>();
+        _sprite = GetComponent<SpriteRenderer>();
+
+        Init();        
     }
 
-    void Start()
+    private void Init()
     {
         _chargeValue = Random.Range(0, _chargesParticles.Count);
 
@@ -30,6 +34,13 @@ public class ChargeSpot : MonoBehaviour
 
         ParticleSystem.MainModule settings = charge.GetComponent<ParticleSystem>().main;
         settings.startColor = _colorChargesParticles[_chargeValue];
+
+        if (_isOnlySpot) {
+            _sprite.color = new Color(_colorChargesParticles[_chargeValue].r,
+                                        _colorChargesParticles[_chargeValue].g,
+                                        _colorChargesParticles[_chargeValue].b,
+                                        _sprite.color.a);
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -39,14 +50,24 @@ public class ChargeSpot : MonoBehaviour
                 KalawasaController.SetChargeValue(_chargeValue);
             } else {
                 if (_chargeValue == -1) {
-                    // sube barra de oxigeno
                     KalawasaController.SetChargeValue(_chargeValue);
-                } else {
+
+                    GameManager.SetChargeOxygen(true);
+                }
+            }
+        }
+    }
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if (collision.CompareTag(_tagPlayerName)) {
+            if (!_isOnlySpot) {
+                if (_chargeValue != -1) {
                     int currentChargeValue = KalawasaController.GetChargeValue();
                     if (_chargeValue == currentChargeValue) {
-                        // repele
+                        KalawasaController.ChargeForce(CalculateDirection(collision.transform.position, true), _magneticForce);
                     } else if (_chargeValue + currentChargeValue == 1) {
-                        // atrae y cuando collisione con roca cambia estado de spot y carga de kalawasa
+                        KalawasaController.ChargeForce(CalculateDirection(collision.transform.position, false), _magneticForce);
                     }
                 }
             }
@@ -58,7 +79,7 @@ public class ChargeSpot : MonoBehaviour
         if (collision.CompareTag(_tagPlayerName)) {
             if (!_isOnlySpot) {
                 if (_chargeValue == -1) {
-                    // deja de subir barra de oxigeno
+                    GameManager.SetChargeOxygen(false);
                 }
             }
         }
@@ -67,6 +88,14 @@ public class ChargeSpot : MonoBehaviour
     public void ChargeToNeutro()
     {
         _chargeValue = -1;
+        //_sprite.color = new Color(87f/255f, 114f/255f, 119f/255f, _sprite.color.a);
+
+        charge.SetActive(false);
         // rock mas oscura y ya no se muestra particulas
+    }
+
+    private Vector2 CalculateDirection(Vector3 position, bool type)
+    {
+        return (type ? 1 : -1) * (new Vector2(position.x - transform.position.x, position.y - transform.position.y));
     }
 }

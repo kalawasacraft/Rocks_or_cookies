@@ -6,7 +6,6 @@ public class KalawasaController : MonoBehaviour
 {
     public static KalawasaController Instance;
 
-    [SerializeField] private float _stunTime;
     [SerializeField] private float _navigationForce;
     [SerializeField] private float _maxVelocity;
 
@@ -14,9 +13,13 @@ public class KalawasaController : MonoBehaviour
     public ParticleSystem navigatorLeft;
     public ParticleSystem navigatorTop;
     public ParticleSystem navigatorDown;
+    public GameObject charge;
+    [SerializeField] private List<Material> _chargesParticles;
+    [SerializeField] private List<Color> _colorChargesParticles;
 
     private Animator _animator;
     private Rigidbody2D _rigidbody;
+    private SpriteRenderer _sprite;
 
     private int _chargeValue = -1;
     private bool _isInit = false;
@@ -35,6 +38,7 @@ public class KalawasaController : MonoBehaviour
 
         _animator = GetComponent<Animator>();
         _rigidbody = GetComponent<Rigidbody2D>();
+        _sprite = GetComponent<SpriteRenderer>();
         //_audio = GetComponent<AudioSource>();
     }
 
@@ -98,7 +102,28 @@ public class KalawasaController : MonoBehaviour
     {
         if (_isInit) {
             _animator.SetTrigger(_hitAnimationTriggerName);
+            _sprite.color = new Color(117f/255f, 36f/255f, 56f/255f, 1f);
+            Invoke("RestartDeafultColor", 0.25f);
         }
+    }
+
+    public void Colonize()
+    {
+        if (_isInit) {
+            _animator.SetTrigger(_happyAnimationTriggerName);
+        }
+    }
+
+    public static void WithoutOxygen()
+    {
+        if (Instance._isInit) {
+            Instance._animator.SetTrigger(Instance._deathAnimationTriggerName);
+        }
+    }
+
+    public void RestartDeafultColor()
+    {
+        _sprite.color = new Color(1f, 1f, 1f, 1f);
     }
 
     public static Transform GetPlayerTransform()
@@ -114,6 +139,23 @@ public class KalawasaController : MonoBehaviour
     public static void SetChargeValue(int value)
     {
         Instance._chargeValue = value;
+        
+        Material currentMaterial = null;
+        ParticleSystem.MinMaxGradient currentColor = null;
+        
+        if (Instance._chargeValue != -1) {
+            currentMaterial = Instance._chargesParticles[Instance._chargeValue];
+            currentColor = Instance._colorChargesParticles[Instance._chargeValue];
+        }
+        
+        ParticleSystem.MainModule settings = Instance.charge.GetComponent<ParticleSystem>().main;
+        settings.startColor = currentColor;
+        Instance.charge.GetComponent<ParticleSystemRenderer>().material = currentMaterial;
+    }
+
+    public static void ChargeForce(Vector2 direction, float magneticForce)
+    {
+        Instance._rigidbody.AddForce(direction * magneticForce, ForceMode2D.Impulse);
     }
 
     public void Initiate()

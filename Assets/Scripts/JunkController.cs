@@ -23,7 +23,7 @@ public class JunkController : MonoBehaviour
     private string _tagPlayerName = "Player";
     private string _tagRockName = "Rock";
     private string _functionHitName = "HitJunk";
-    private string _functionCollisionName = "ShowCollision";
+    private string _functionCollisionName = "ShowCollisionJunk";
 
     void Awake()
     {

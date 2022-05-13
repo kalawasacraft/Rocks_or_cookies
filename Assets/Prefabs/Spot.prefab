@@ -4928,6 +4928,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   charge: {fileID: 478822762776214193}
+  _magneticForce: 0.15
   _chargesParticles:
   - {fileID: 2100000, guid: 2c697c627d3f74c96b8ea29ac2cdb916, type: 2}
   - {fileID: 2100000, guid: 89d357bf253418dbb9898ca606b805fc, type: 2}

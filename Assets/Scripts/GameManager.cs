@@ -5,10 +5,13 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
+    [SerializeField] private float _timeOxygen;
 
     private float _myScore = 0f;
     private float _timeAlive = 0f;
     private bool _timerGoing = false;
+    private float _currentTimeOxygen;
+    private bool _oxygenStatus = true;
 
     private bool _isAppStart = false;
 
@@ -22,6 +25,8 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        _currentTimeOxygen = _timeOxygen;
+
         if (_isAppStart) {
             _isAppStart = false;
         } else {
@@ -56,8 +61,10 @@ public class GameManager : MonoBehaviour
 
     public static void AddToMyScore(float value)
     {
-        Instance._myScore += value;
-        UIManager.SetCurrentScoreUI(((int) Instance._myScore).ToString());
+        if (Instance._timerGoing) {
+            Instance._myScore += value;
+            UIManager.SetCurrentScoreUI(((int) Instance._myScore).ToString());
+        }
     }
 
     public static float GetMyHighestScore()
@@ -92,6 +99,12 @@ public class GameManager : MonoBehaviour
     {
         Instance._timerGoing = true;
         Instance.StartCoroutine(Instance.UpdateTimer());
+        Instance.StartCoroutine(Instance.UpdateOxygen());
+    }
+
+    public static void SetChargeOxygen(bool value)
+    {
+        Instance._oxygenStatus = value;
     }
 
     private IEnumerator UpdateTimer()
@@ -102,8 +115,34 @@ public class GameManager : MonoBehaviour
             UIManager.SetTimerUI(_timeAlive.ToString("00000.00"));
             yield return null;
         }
+    }
 
-        //UIManager.Finish(false, _myScore, 0f);
+    private IEnumerator UpdateOxygen()
+    {
+        bool isCritical = false;
+        while (_currentTimeOxygen > 0) {
+            
+            if (_oxygenStatus) {
+                _currentTimeOxygen = Mathf.Min(_currentTimeOxygen + Time.deltaTime, _timeOxygen);
+            } else {
+                _currentTimeOxygen -= Time.deltaTime;
+            }
+            
+            if (_currentTimeOxygen <= _timeOxygen/4) {
+                isCritical = ((int) (_currentTimeOxygen*5) % 2 == 0);
+            } else {
+                isCritical = false;
+            }
+
+            if (!_timerGoing) {
+                _currentTimeOxygen = 0f;
+            }
+
+            UIManager.DrawOxygenLine(Mathf.Max(0f, _currentTimeOxygen), _timeOxygen, isCritical);
+            yield return null;
+        }
+
+        KalawasaController.WithoutOxygen();
     }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]

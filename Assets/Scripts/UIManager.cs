@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
@@ -10,14 +11,23 @@ public class UIManager : MonoBehaviour
     public GameObject timerPanel;
     public TMPro.TMP_Text timer;
     public TMPro.TMP_Text score;
+    public Image oxygenLine;
     public GameObject scoreField;
     public TMPro.TMP_Text finishScore;
     public TMPro.TMP_Text finishTime;
     public TMPro.TMP_Text finishTotal;
+
+    private float _maxWidthOxygenLine;
+    private float _colorOxygenLine;
     
     void Awake()
     {
         UIManager.Instance = this;
+    }
+
+    void Start()
+    {
+        _maxWidthOxygenLine = oxygenLine.rectTransform.sizeDelta.x;
     }
 
     public static void Init()
@@ -47,5 +57,17 @@ public class UIManager : MonoBehaviour
     public static void SetCurrentScoreUI(string score)
     {
         Instance.score.SetText(score);
+    }
+
+    public static void DrawOxygenLine(float value, float maxValue, bool isCritical)
+    {
+        float currentWidth = (value * Instance._maxWidthOxygenLine) / maxValue;
+        Instance.oxygenLine.rectTransform.sizeDelta = new Vector2(currentWidth, Instance.oxygenLine.rectTransform.sizeDelta.y);
+
+        if (isCritical) {
+            Instance.oxygenLine.color = new Color(165/255f, 48/255f, 48/255f, 1f);
+        } else {
+            Instance.oxygenLine.color = new Color(1f, 1f, 1f, 1f);
+        }
     }
 }

@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 8726431191519154884}
   m_Layer: 0
   m_Name: Rock
-  m_TagString: Untagged
+  m_TagString: Rock
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -158,6 +158,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 067f2a4843b19c194b38d0b3142c7162, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _spotCharge: {fileID: 1600248784503791363}
+  _isColonize: 0
 --- !u!1001 &8232426273856434935
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -219,6 +221,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b2112b4027ce8e2b39f427f3ec50c68f, type: 3}
+--- !u!1 &1600248784503791363 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7208659772329389556, guid: b2112b4027ce8e2b39f427f3ec50c68f, type: 3}
+  m_PrefabInstance: {fileID: 8232426273856434935}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7836962321168647209 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2232958177290155742, guid: b2112b4027ce8e2b39f427f3ec50c68f, type: 3}
