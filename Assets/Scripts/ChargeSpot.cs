@@ -35,7 +35,7 @@ public class ChargeSpot : MonoBehaviour
         ParticleSystem.MainModule settings = charge.GetComponent<ParticleSystem>().main;
         settings.startColor = _colorChargesParticles[_chargeValue];
 
-        if (_isOnlySpot) {
+        if (!_isOnlySpot) {
             _sprite.color = new Color(_colorChargesParticles[_chargeValue].r,
                                         _colorChargesParticles[_chargeValue].g,
                                         _colorChargesParticles[_chargeValue].b,
@@ -48,6 +48,8 @@ public class ChargeSpot : MonoBehaviour
         if (collision.CompareTag(_tagPlayerName)) {
             if (_isOnlySpot) {
                 KalawasaController.SetChargeValue(_chargeValue);
+                
+                GameManager.SetChargeOxygen(true);
             } else {
                 if (_chargeValue == -1) {
                     KalawasaController.SetChargeValue(_chargeValue);
@@ -77,7 +79,9 @@ public class ChargeSpot : MonoBehaviour
     private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.CompareTag(_tagPlayerName)) {
-            if (!_isOnlySpot) {
+            if (_isOnlySpot) {
+                GameManager.SetChargeOxygen(false);
+            } else {
                 if (_chargeValue == -1) {
                     GameManager.SetChargeOxygen(false);
                 }
@@ -88,10 +92,9 @@ public class ChargeSpot : MonoBehaviour
     public void ChargeToNeutro()
     {
         _chargeValue = -1;
-        //_sprite.color = new Color(87f/255f, 114f/255f, 119f/255f, _sprite.color.a);
+        _sprite.color = new Color(1f, 1f, 1f, _sprite.color.a);
 
         charge.SetActive(false);
-        // rock mas oscura y ya no se muestra particulas
     }
 
     private Vector2 CalculateDirection(Vector3 position, bool type)

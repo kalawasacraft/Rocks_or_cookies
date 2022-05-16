@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class RockController : MonoBehaviour
 {
+    public GameObject pointsToPanel;
+    public TMPro.TMP_Text textPointsToPanel;
+    [SerializeField] private Vector3 _offsetToPanel;
     [SerializeField] private GameObject _spotCharge;
     [SerializeField] private bool _isColonize = false;
 
@@ -11,7 +14,7 @@ public class RockController : MonoBehaviour
     private Collider2D _collider;
     private SpriteRenderer _sprite;
 
-    private int _points = 0;
+    private int _points = 4;
     private bool _isFirstCollisionPlayer = false;
 
     private string _collisionAnimationTriggerName = "Collision";
@@ -30,26 +33,50 @@ public class RockController : MonoBehaviour
     {
         if (_isColonize) {
             Colonized();
+        } else {
+            transform.localScale = new Vector3(1.9f, 1.9f, 1f);
+        }
+        textPointsToPanel.SetText(_points.ToString());
+    }
+
+    void Update()
+    {
+        if (!_isFirstCollisionPlayer) {
+            pointsToPanel.transform.position = Camera.main.WorldToScreenPoint(transform.position + _offsetToPanel);
         }
     }
 
-    public void Init()
+    public void Init(float scaleValue, int pointsValue)
     {
+        _points = pointsValue;
+        textPointsToPanel.SetText(_points.ToString());
+        transform.localScale = new Vector3(scaleValue, scaleValue, 1f);
         // set scale, points, charge
     }
 
     private void Colonized()
     {
         _isFirstCollisionPlayer = true;
+        pointsToPanel.SetActive(false);
 
         _spotCharge.GetComponent<ChargeSpot>().ChargeToNeutro();
-        _sprite.color = new Color(87f/255f, 114f/255f, 119f/255f, 1f);
+        _sprite.color = new Color(87/255f, 114/255f, 119/255f, 1f);
     }
 
     public void ShowCollisionJunk()
     {
-        _animator.SetTrigger(_collisionAnimationTriggerName);
-        // less value's rock
+        if (!_isFirstCollisionPlayer) {
+            _points -= 2;
+            
+            if (_points == 0) {
+                _isFirstCollisionPlayer = true;
+                pointsToPanel.SetActive(false);
+                _animator.SetTrigger(_explosionAnimationTriggerName);
+            } else {
+                _animator.SetTrigger(_collisionAnimationTriggerName);
+                textPointsToPanel.SetText(_points.ToString());
+            }
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -60,12 +87,18 @@ public class RockController : MonoBehaviour
             if (currentChargeValue != -1) {
 
                 Colonized();
-                // add value's rock to score
+
                 KalawasaController.SetChargeValue(-1);
+                GameManager.AddToMyScore(_points);
                 GameManager.SetChargeOxygen(true);
 
                 collision.gameObject.SendMessageUpwards(_functionColonizeName);
             }
         }
+    }
+
+    public void ExplosionRock()
+    {
+        Destroy(gameObject);
     }
 }

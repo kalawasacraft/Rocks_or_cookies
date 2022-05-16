@@ -153,9 +153,15 @@ public class KalawasaController : MonoBehaviour
         Instance.charge.GetComponent<ParticleSystemRenderer>().material = currentMaterial;
     }
 
-    public static void ChargeForce(Vector2 direction, float magneticForce)
+    public static void ChargeForce(Vector2 direction, float maxMagneticForce)
     {
-        Instance._rigidbody.AddForce(direction * magneticForce, ForceMode2D.Impulse);
+        float tDistance = 2f, tForce = 0.001f;
+        float currentDistance = Mathf.Sqrt(direction.x * direction.x + direction.y * direction.y);
+        Debug.Log(currentDistance);
+        
+        float newForce = ((tDistance - currentDistance) * maxMagneticForce + currentDistance * tForce) / tDistance;
+        //Debug.Log(newForce);
+        Instance._rigidbody.AddForce(direction * newForce, ForceMode2D.Impulse);
     }
 
     public void Initiate()
