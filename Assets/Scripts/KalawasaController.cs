@@ -160,7 +160,7 @@ public class KalawasaController : MonoBehaviour
         Debug.Log(currentDistance);
         
         float newForce = ((tDistance - currentDistance) * maxMagneticForce + currentDistance * tForce) / tDistance;
-        //Debug.Log(newForce);
+        
         Instance._rigidbody.AddForce(direction * newForce, ForceMode2D.Impulse);
     }
 

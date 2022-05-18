@@ -9,7 +9,7 @@ public class ChargeSpot : MonoBehaviour
     [SerializeField] private float _magneticForce;
     [SerializeField] private List<Material> _chargesParticles;
     [SerializeField] private List<Color> _colorChargesParticles;
-    [SerializeField] private bool _isOnlySpot;
+    [SerializeField] private bool _isOnlySpot = true;
     
     private int _chargeValue = -1;
 
@@ -26,10 +26,11 @@ public class ChargeSpot : MonoBehaviour
         Init();        
     }
 
-    private void Init()
+    public void Init()
     {
         _chargeValue = Random.Range(0, _chargesParticles.Count);
 
+        charge.SetActive(true);
         charge.GetComponent<ParticleSystemRenderer>().material = _chargesParticles[_chargeValue];
 
         ParticleSystem.MainModule settings = charge.GetComponent<ParticleSystem>().main;
@@ -71,6 +72,8 @@ public class ChargeSpot : MonoBehaviour
                     } else if (_chargeValue + currentChargeValue == 1) {
                         KalawasaController.ChargeForce(CalculateDirection(collision.transform.position, false), _magneticForce);
                     }
+                    
+                    GameManager.SetChargeOxygen(false);
                 }
             }
         }

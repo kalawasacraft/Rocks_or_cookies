@@ -9,12 +9,14 @@ public class RockController : MonoBehaviour
     [SerializeField] private Vector3 _offsetToPanel;
     [SerializeField] private GameObject _spotCharge;
     [SerializeField] private bool _isColonize = false;
+    [SerializeField] private int _shocksDecolonization = 2;
 
     private Animator _animator;
     private Collider2D _collider;
     private SpriteRenderer _sprite;
 
     private int _points = 4;
+    private int _currentShocksDecolonization = 0;
     private bool _isFirstCollisionPlayer = false;
 
     private string _collisionAnimationTriggerName = "Collision";
@@ -31,12 +33,14 @@ public class RockController : MonoBehaviour
 
     void Start()
     {
+        _currentShocksDecolonization = _shocksDecolonization;
+
         if (_isColonize) {
             Colonized();
-        } else {
+        }/* else {
             transform.localScale = new Vector3(1.9f, 1.9f, 1f);
-        }
-        textPointsToPanel.SetText(_points.ToString());
+        }*/
+        textPointsToPanel.SetText(_points.ToString());        
     }
 
     void Update()
@@ -51,7 +55,6 @@ public class RockController : MonoBehaviour
         _points = pointsValue;
         textPointsToPanel.SetText(_points.ToString());
         transform.localScale = new Vector3(scaleValue, scaleValue, 1f);
-        // set scale, points, charge
     }
 
     private void Colonized()
@@ -61,6 +64,16 @@ public class RockController : MonoBehaviour
 
         _spotCharge.GetComponent<ChargeSpot>().ChargeToNeutro();
         _sprite.color = new Color(87/255f, 114/255f, 119/255f, 1f);
+    }
+
+    private void Decolonized()
+    {
+        _isFirstCollisionPlayer = false;
+        _currentShocksDecolonization = _shocksDecolonization;
+        pointsToPanel.SetActive(true);
+
+        _spotCharge.GetComponent<ChargeSpot>().Init();
+        _sprite.color = new Color(1f, 1f, 1f, 1f);
     }
 
     public void ShowCollisionJunk()
@@ -75,6 +88,13 @@ public class RockController : MonoBehaviour
             } else {
                 _animator.SetTrigger(_collisionAnimationTriggerName);
                 textPointsToPanel.SetText(_points.ToString());
+            }
+        } else if (_isFirstCollisionPlayer && _points > 0) {
+            _currentShocksDecolonization -= 1;
+            if (_currentShocksDecolonization == 0) {
+                Decolonized();
+            } else {
+                _sprite.color = Color.Lerp(new Color(1f, 1f, 1f, 1f), new Color(87/255f, 114/255f, 119/255f, 1f), (_currentShocksDecolonization * 1f) / _shocksDecolonization);
             }
         }
     }

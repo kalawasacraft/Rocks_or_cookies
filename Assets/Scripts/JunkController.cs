@@ -108,4 +108,14 @@ public class JunkController : MonoBehaviour
         
         Stop();
     }
+
+    void OnBecameVisible()
+    {
+        _collider.enabled = true;
+    }
+    
+    void OnBecameInvisible()
+    {
+        _collider.enabled = false;
+    }
 }

@@ -123,7 +123,7 @@ public class GameManager : MonoBehaviour
         while (_currentTimeOxygen > 0) {
             
             if (_oxygenStatus) {
-                _currentTimeOxygen = Mathf.Min(_currentTimeOxygen + Time.deltaTime, _timeOxygen);
+                _currentTimeOxygen = Mathf.Min(_currentTimeOxygen + 2 * Time.deltaTime, _timeOxygen);
             } else {
                 _currentTimeOxygen -= Time.deltaTime;
             }
