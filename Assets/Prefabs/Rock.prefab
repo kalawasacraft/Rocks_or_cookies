@@ -477,6 +477,7 @@ MonoBehaviour:
   _offsetToPanel: {x: 0, y: 0, z: 0}
   _spotCharge: {fileID: 1600248784503791363}
   _isColonize: 0
+  _shocksDecolonization: 2
 --- !u!1001 &8232426273856434935
 PrefabInstance:
   m_ObjectHideFlags: 0

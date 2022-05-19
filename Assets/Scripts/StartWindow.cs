@@ -9,7 +9,7 @@ public class StartWindow : MonoBehaviour
 
     void Start()
     {
-        _highestScoreText.SetText(GameManager.GetMyHighestScore().ToString("0.00"));
+        _highestScoreText.SetText(GameManager.GetMyHighestScore().ToString());
     }
 
     void Update()

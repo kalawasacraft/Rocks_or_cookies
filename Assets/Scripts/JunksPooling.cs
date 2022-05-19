@@ -12,6 +12,7 @@ public class JunksPooling : MonoBehaviour
     [SerializeField] private Vector2 _rangeSpeedRotation;
     [SerializeField] private Vector2 _rangeMoveForce;
     [SerializeField] private Vector2 _rangeInstantiateGap;
+    [SerializeField] private float _valueChangeDifficult;
     [SerializeField] private float _offCameraDistance;
 
     void Awake()
@@ -101,5 +102,15 @@ public class JunksPooling : MonoBehaviour
         Vector2 position = new Vector2(Random.Range(worldMin.x, worldMax.x), Random.Range(worldMin.y, worldMax.y));
 
         return (position, direction);
+    }
+
+    public static void NextLevel()
+    {
+        Debug.Log("NextLevel!!");
+        Instance._rangeMoveForce[0] = Instance._rangeMoveForce[0] + ((Instance._rangeMoveForce[1] - Instance._rangeMoveForce[0]) * Instance._valueChangeDifficult);
+        Instance._rangeInstantiateGap[1] = Instance._rangeInstantiateGap[1] - ((Instance._rangeInstantiateGap[1] - Instance._rangeInstantiateGap[0]) * Instance._valueChangeDifficult);
+
+        Debug.Log(Instance._rangeMoveForce[0]);
+        Debug.Log(Instance._rangeInstantiateGap[1]);
     }
 }

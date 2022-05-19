@@ -37,17 +37,14 @@ public class RockController : MonoBehaviour
 
         if (_isColonize) {
             Colonized();
-        }/* else {
-            transform.localScale = new Vector3(1.9f, 1.9f, 1f);
-        }*/
-        textPointsToPanel.SetText(_points.ToString());        
+        }
+        textPointsToPanel.SetText(_points.ToString());
+        CenterPoints();
     }
 
     void Update()
     {
-        if (!_isFirstCollisionPlayer) {
-            pointsToPanel.transform.position = Camera.main.WorldToScreenPoint(transform.position + _offsetToPanel);
-        }
+        CenterPoints();
     }
 
     public void Init(float scaleValue, int pointsValue)
@@ -55,6 +52,13 @@ public class RockController : MonoBehaviour
         _points = pointsValue;
         textPointsToPanel.SetText(_points.ToString());
         transform.localScale = new Vector3(scaleValue, scaleValue, 1f);
+    }
+
+    private void CenterPoints()
+    {
+        if (!_isFirstCollisionPlayer) {
+            pointsToPanel.transform.position = Camera.main.WorldToScreenPoint(transform.position + _offsetToPanel);
+        }
     }
 
     private void Colonized()

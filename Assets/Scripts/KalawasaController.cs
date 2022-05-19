@@ -157,7 +157,6 @@ public class KalawasaController : MonoBehaviour
     {
         float tDistance = 2f, tForce = 0.001f;
         float currentDistance = Mathf.Sqrt(direction.x * direction.x + direction.y * direction.y);
-        Debug.Log(currentDistance);
         
         float newForce = ((tDistance - currentDistance) * maxMagneticForce + currentDistance * tForce) / tDistance;
         

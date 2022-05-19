@@ -27,6 +27,7 @@ public class PopulateRocks : MonoBehaviour
     void Start()
     {
         _mainCenter = new Vector2Int(0, 0);
+        _points.Add(_mainCenter);
 
         for (int i = _mainCenter.y - 1; i <= _mainCenter.y + 1; i++) {
             PopulationPoint(new Vector2Int(_mainCenter.x - 1, i));
@@ -41,11 +42,13 @@ public class PopulateRocks : MonoBehaviour
 
     void Update()
     {
-        Vector2 centerPositionCam = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width/2, Screen.height/2));
-        Vector2Int currentCenter = new Vector2Int(ValuePositionToPoint(centerPositionCam.x), ValuePositionToPoint(centerPositionCam.y));
+        if (KalawasaController.GetIsInit()) {
+            Vector2 centerPositionCam = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width/2, Screen.height/2));
+            Vector2Int currentCenter = new Vector2Int(ValuePositionToPoint(centerPositionCam.x), ValuePositionToPoint(centerPositionCam.y));
 
-        if (!_mainCenter.Equals(currentCenter)) {
-            MapInCenter(currentCenter);
+            if (!_mainCenter.Equals(currentCenter)) {
+                MapInCenter(currentCenter);
+            }
         }
     }
     

@@ -9,6 +9,8 @@ public class UIManager : MonoBehaviour
     
     public GameObject panelStart;
     public GameObject timerPanel;
+    public GameObject linePanel;
+    public GameObject minimapPanel;
     public TMPro.TMP_Text timer;
     public TMPro.TMP_Text score;
     public Image oxygenLine;
@@ -36,11 +38,15 @@ public class UIManager : MonoBehaviour
         Instance.timer.SetText("00000.00");
         Instance.score.SetText("0");
         Instance.timerPanel.SetActive(true);
+        Instance.linePanel.SetActive(true);
+        Instance.minimapPanel.SetActive(true);
     }
 
     public static void ShowResults(string score, string time, string total)
     {
         Instance.timerPanel.SetActive(false);
+        Instance.linePanel.SetActive(false);
+        Instance.minimapPanel.SetActive(false);
         
         Instance.finishScore.SetText(score);
         Instance.finishTime.SetText(time);

@@ -4,19 +4,24 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public Leaderboard leaderboard;
+
     public static GameManager Instance;
     [SerializeField] private float _timeOxygen;
+    [SerializeField] private int _timeChangeDifficult;
 
     private float _myScore = 0f;
     private float _timeAlive = 0f;
     private bool _timerGoing = false;
     private float _currentTimeOxygen;
     private bool _oxygenStatus = true;
+    private int _currentLevel = 0;
 
     private bool _isAppStart = false;
 
     private string _nicknamePrefs = "Nickname";
     private string _highScorePrefs = "HighScore";
+    private string _playerIDPrefs = "PlayerID";
 
     void Awake()
     {
@@ -50,12 +55,13 @@ public class GameManager : MonoBehaviour
 
     private void LoadFinishGame()
     {
-        float scoreTime = _timeAlive / 10f;
-        float total = scoreTime + _myScore;
+        int scoreTime = ((int)_timeAlive) / 10;
+        int total = scoreTime + ((int)_myScore);
 
         SetMyHighestScore(Mathf.Max(GetMyHighestScore(), total));
+        StartCoroutine(leaderboard.SubmitScoreRoutine(total));
 
-        UIManager.ShowResults(((int) _myScore).ToString(), scoreTime.ToString("0.00"), total.ToString("0.00"));
+        UIManager.ShowResults(((int) _myScore).ToString(), scoreTime.ToString(), total.ToString());
         CameraZoom.SetZoom(true);
     }
 
@@ -67,17 +73,17 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public static float GetMyHighestScore()
+    public static int GetMyHighestScore()
     {
         if (PlayerPrefs.HasKey(Instance._highScorePrefs)) {
-            return PlayerPrefs.GetFloat(Instance._highScorePrefs);
+            return PlayerPrefs.GetInt(Instance._highScorePrefs);
         }
-        return 0f;
+        return 0;
     }
 
-    public static void SetMyHighestScore(float value)
+    public static void SetMyHighestScore(int value)
     {
-        PlayerPrefs.SetFloat(Instance._highScorePrefs, value);
+        PlayerPrefs.SetInt(Instance._highScorePrefs, value);
         PlayerPrefs.Save();
     }
 
@@ -86,13 +92,24 @@ public class GameManager : MonoBehaviour
         if (PlayerPrefs.HasKey(Instance._nicknamePrefs)) {
             return PlayerPrefs.GetString(Instance._nicknamePrefs);
         }
-        return "--";
+        return "";
     }
 
     public static void SetMyNickname(string value)
     {
         PlayerPrefs.SetString(Instance._nicknamePrefs, value);
         PlayerPrefs.Save();
+    }
+
+    public static void SetMyPlayerID(string value)
+    {
+        PlayerPrefs.SetString(Instance._playerIDPrefs, value);
+        PlayerPrefs.Save();
+    }
+
+    public static string GetMyPlayerID()
+    {
+        return PlayerPrefs.GetString(Instance._playerIDPrefs);            
     }
 
     public static void BeginTimer()
@@ -108,11 +125,19 @@ public class GameManager : MonoBehaviour
     }
 
     private IEnumerator UpdateTimer()
-    {        
+    {
+        int level = _currentLevel;
+
         while (_timerGoing) {
             _timeAlive += Time.deltaTime;
 
             UIManager.SetTimerUI(_timeAlive.ToString("00000.00"));
+
+            level = ((int)_timeAlive) / _timeChangeDifficult;
+            if (level != _currentLevel) {
+                _currentLevel = level;
+                JunksPooling.NextLevel();
+            }
             yield return null;
         }
     }
