@@ -106,11 +106,7 @@ public class JunksPooling : MonoBehaviour
 
     public static void NextLevel()
     {
-        Debug.Log("NextLevel!!");
         Instance._rangeMoveForce[0] = Instance._rangeMoveForce[0] + ((Instance._rangeMoveForce[1] - Instance._rangeMoveForce[0]) * Instance._valueChangeDifficult);
         Instance._rangeInstantiateGap[1] = Instance._rangeInstantiateGap[1] - ((Instance._rangeInstantiateGap[1] - Instance._rangeInstantiateGap[0]) * Instance._valueChangeDifficult);
-
-        Debug.Log(Instance._rangeMoveForce[0]);
-        Debug.Log(Instance._rangeInstantiateGap[1]);
     }
 }

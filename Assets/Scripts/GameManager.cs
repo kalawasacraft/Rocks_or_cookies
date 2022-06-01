@@ -121,7 +121,10 @@ public class GameManager : MonoBehaviour
 
     public static void SetChargeOxygen(bool value)
     {
-        Instance._oxygenStatus = value;
+        if (KalawasaController.GetIsInit()) {
+            Instance._oxygenStatus = value;
+            KalawasaController.PlayOxygenCharge(Instance._oxygenStatus);
+        }
     }
 
     private IEnumerator UpdateTimer()
@@ -161,6 +164,11 @@ public class GameManager : MonoBehaviour
 
             if (!_timerGoing) {
                 _currentTimeOxygen = 0f;
+                KalawasaController.PlayOxygenCharge(false);
+            }
+
+            if (_currentTimeOxygen == _timeOxygen) {
+                KalawasaController.PlayOxygenCharge(false);
             }
 
             UIManager.DrawOxygenLine(Mathf.Max(0f, _currentTimeOxygen), _timeOxygen, isCritical);

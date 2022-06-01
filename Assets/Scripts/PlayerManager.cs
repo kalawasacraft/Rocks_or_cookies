@@ -6,18 +6,31 @@ using TMPro;
 
 public class PlayerManager : MonoBehaviour
 {
-    //public Leaderboard leaderboard;
+    public Leaderboard leaderboard;
     public TMP_InputField playerNameInputfield;
     
     void Start()
     {
+        playerNameInputfield.text = GameManager.GetMyNickname();
         StartCoroutine(SetupRoutine());
+    }
+
+    public void SetPlayerName()
+    {
+        LootLockerSDKManager.SetPlayerName(playerNameInputfield.text, (response) => {
+            if(response.success) {
+                GameManager.SetMyNickname(playerNameInputfield.text);
+                Debug.Log("Succesfully set player name");
+            } else {
+                Debug.Log("Could not set player name"+response.Error);
+            }
+        });
     }
 
     IEnumerator SetupRoutine()
     {
         yield return LoginRoutine();
-        //yield return leaderboard.FetchTopHighscoresRoutine();
+        yield return leaderboard.FetchTopHighscoresRoutine();
     }
 
     IEnumerator LoginRoutine()

@@ -16,15 +16,27 @@ public class KalawasaController : MonoBehaviour
     public GameObject charge;
     [SerializeField] private List<Material> _chargesParticles;
     [SerializeField] private List<Color> _colorChargesParticles;
+    public AudioSource _audioHurtBox;
+    public AudioClip _clipDeathHurtBox;
+    public AudioSource _audioHitBox;
+    public AudioClip _clipCharge;
+    public AudioClip _clipDischarge;
+    public AudioSource _audioCharge;
+    public AudioSource _audioRightNav;
+    public AudioSource _audioLeftNav;
+    public AudioSource _audioTopNav;
+    public AudioSource _audioDownNav;
 
     private Animator _animator;
     private Rigidbody2D _rigidbody;
     private SpriteRenderer _sprite;
+    private AudioSource _audio;
 
     private int _chargeValue = -1;
     private bool _isInit = false;
     private float _horizontalInput;
     private float _verticalInput;
+    private bool _isNavR = false, _isNavL = false, _isNavU = false, _isNavD = false;
 
     private string _readyAnimationTriggerName = "Ready";
     private string _happyAnimationTriggerName = "Happy";
@@ -39,7 +51,7 @@ public class KalawasaController : MonoBehaviour
         _animator = GetComponent<Animator>();
         _rigidbody = GetComponent<Rigidbody2D>();
         _sprite = GetComponent<SpriteRenderer>();
-        //_audio = GetComponent<AudioSource>();
+        _audio = GetComponent<AudioSource>();
     }
 
     void Update()
@@ -62,6 +74,7 @@ public class KalawasaController : MonoBehaviour
             if (Mathf.Abs(_rigidbody.velocity.y) > _maxVelocity && _verticalInput * _rigidbody.velocity.y > 0f) {
                 _verticalInput = 0;
             }
+
             _rigidbody.AddForce(new Vector2(_horizontalInput, _verticalInput) * _navigationForce, ForceMode2D.Impulse);
         }
     }
@@ -70,21 +83,67 @@ public class KalawasaController : MonoBehaviour
     {
         if (_isInit) {
             if (_horizontalInput > 0) {
-                navigatorRight.Play();
+                if (!navigatorRight.isEmitting) {
+                    navigatorRight.Play();
+                }
+                if (!_isNavR) {
+                    _audioRightNav.Play();
+                    _isNavR = true;
+                }
             } else if (_horizontalInput < 0) {
-                navigatorLeft.Play();
+                if (!navigatorLeft.isEmitting) {
+                    navigatorLeft.Play();
+                }
+                if (!_isNavL) {
+                    _audioLeftNav.Play();
+                    _isNavL = true;
+                }
+            } else {
+                if (_isNavR) {
+                    _audioRightNav.Stop();
+                    _isNavR = false;
+                } else if (_isNavL) {
+                    _audioLeftNav.Stop();
+                    _isNavL = false;
+                }
             }
 
             if (_verticalInput > 0) {
-                navigatorTop.Play();
+                if (!navigatorTop.isEmitting) {
+                    navigatorTop.Play();
+                }
+                if (!_isNavU) {
+                    _audioTopNav.Play();
+                    _isNavU = true;
+                }
             } else if (_verticalInput < 0) {
-                navigatorDown.Play();
+                if (!navigatorDown.isEmitting) {
+                    navigatorDown.Play();
+                }
+                if (!_isNavD) {
+                    _audioDownNav.Play();
+                    _isNavD = true;
+                }
+            } else {
+                if (_isNavU) {
+                    _audioTopNav.Stop();
+                    _isNavU = false;
+                } else if (_isNavD) {
+                    _audioDownNav.Stop();
+                    _isNavD = false;
+                }
             }
 
             if (_animator.GetCurrentAnimatorStateInfo(0).IsTag(_tagDeathName)) {
                 GameManager.FinishGame();
                 _isInit = false;
             }
+
+        } else {
+            _audioRightNav.Stop();
+            _audioLeftNav.Stop();
+            _audioTopNav.Stop();
+            _audioDownNav.Stop();
         }
     }
 
@@ -101,6 +160,7 @@ public class KalawasaController : MonoBehaviour
     public void HitJunk()
     {
         if (_isInit) {
+            _audioHurtBox.Play();
             _animator.SetTrigger(_hitAnimationTriggerName);
             _sprite.color = new Color(117f/255f, 36f/255f, 56f/255f, 1f);
             Invoke("RestartDeafultColor", 0.25f);
@@ -111,12 +171,14 @@ public class KalawasaController : MonoBehaviour
     {
         if (_isInit) {
             _animator.SetTrigger(_happyAnimationTriggerName);
+            _audio.Play();
         }
     }
 
     public static void WithoutOxygen()
     {
         if (Instance._isInit) {
+            Instance._audioHurtBox.Play();
             Instance._animator.SetTrigger(Instance._deathAnimationTriggerName);
         }
     }
@@ -138,6 +200,15 @@ public class KalawasaController : MonoBehaviour
 
     public static void SetChargeValue(int value)
     {
+        if (Instance._chargeValue != value) {
+            if (value != -1) {
+                Instance._audioHitBox.clip = Instance._clipCharge;
+            } else {
+                Instance._audioHitBox.clip = Instance._clipDischarge;
+            }
+            Instance._audioHitBox.Play();
+        }
+        
         Instance._chargeValue = value;
         
         Material currentMaterial = null;
@@ -167,5 +238,20 @@ public class KalawasaController : MonoBehaviour
     {
         _isInit = true;
         GameManager.BeginTimer();
+    }
+
+    public void Death()
+    {
+        _audioHurtBox.clip = _clipDeathHurtBox;
+        _audioHurtBox.Play();
+    }
+
+    public static void PlayOxygenCharge(bool value)
+    {
+        if (value) {
+            Instance._audioCharge.Play();
+        } else {
+            Instance._audioCharge.Stop();
+        }
     }
 }

@@ -10,10 +10,14 @@ public class RockController : MonoBehaviour
     [SerializeField] private GameObject _spotCharge;
     [SerializeField] private bool _isColonize = false;
     [SerializeField] private int _shocksDecolonization = 2;
+    [SerializeField] private AudioClip _impactJunkSound;
+    [SerializeField] private AudioClip _impactWoodSound;
+    [SerializeField] private AudioClip _explotionSound;
 
     private Animator _animator;
     private Collider2D _collider;
     private SpriteRenderer _sprite;
+    private AudioSource _audio;
 
     private int _points = 4;
     private int _currentShocksDecolonization = 0;
@@ -29,6 +33,7 @@ public class RockController : MonoBehaviour
         _animator = GetComponent<Animator>();
         _collider = GetComponent<Collider2D>();
         _sprite = GetComponent<SpriteRenderer>();
+        _audio = GetComponent<AudioSource>();
     }
 
     void Start()
@@ -82,47 +87,65 @@ public class RockController : MonoBehaviour
 
     public void ShowCollisionJunk()
     {
-        if (!_isFirstCollisionPlayer) {
-            _points -= 2;
-            
-            if (_points == 0) {
-                _isFirstCollisionPlayer = true;
-                pointsToPanel.SetActive(false);
-                _animator.SetTrigger(_explosionAnimationTriggerName);
+        if (_points > 0) {
+            PlaySound(_impactJunkSound);
+
+            if (!_isFirstCollisionPlayer) {
+                _points -= 2;
+                
+                if (_points == 0) {
+                    _isFirstCollisionPlayer = true;
+                    pointsToPanel.SetActive(false);
+                    _animator.SetTrigger(_explosionAnimationTriggerName);
+                } else {
+                    _animator.SetTrigger(_collisionAnimationTriggerName);
+                    textPointsToPanel.SetText(_points.ToString());
+                }
             } else {
-                _animator.SetTrigger(_collisionAnimationTriggerName);
-                textPointsToPanel.SetText(_points.ToString());
-            }
-        } else if (_isFirstCollisionPlayer && _points > 0) {
-            _currentShocksDecolonization -= 1;
-            if (_currentShocksDecolonization == 0) {
-                Decolonized();
-            } else {
-                _sprite.color = Color.Lerp(new Color(1f, 1f, 1f, 1f), new Color(87/255f, 114/255f, 119/255f, 1f), (_currentShocksDecolonization * 1f) / _shocksDecolonization);
+                _currentShocksDecolonization -= 1;
+                if (_currentShocksDecolonization == 0) {
+                    Decolonized();
+                } else {
+                    _sprite.color = Color.Lerp(new Color(1f, 1f, 1f, 1f), new Color(87/255f, 114/255f, 119/255f, 1f), (_currentShocksDecolonization * 1f) / _shocksDecolonization);
+                }
             }
         }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
 	{
-        if (collision.gameObject.tag == _tagPlayerName && !_isFirstCollisionPlayer) {
-            
-            int currentChargeValue = KalawasaController.GetChargeValue();
-            if (currentChargeValue != -1) {
+        if (collision.gameObject.tag == _tagPlayerName) {
+            PlaySound(_impactWoodSound);
 
-                Colonized();
+            if (!_isFirstCollisionPlayer) {
+                int currentChargeValue = KalawasaController.GetChargeValue();
 
-                KalawasaController.SetChargeValue(-1);
-                GameManager.AddToMyScore(_points);
-                GameManager.SetChargeOxygen(true);
+                if (currentChargeValue != -1) {
+                    Colonized();
 
-                collision.gameObject.SendMessageUpwards(_functionColonizeName);
+                    KalawasaController.SetChargeValue(-1);
+                    GameManager.AddToMyScore(_points);
+                    GameManager.SetChargeOxygen(true);
+
+                    collision.gameObject.SendMessageUpwards(_functionColonizeName);
+                }
             }
         }
     }
 
-    public void ExplosionRock()
+    public void EndExplosionRock()
     {
         Destroy(gameObject);
+    }
+
+    public void ExplosionRock()
+    {
+        PlaySound(_explotionSound);
+    }
+
+    private void PlaySound(AudioClip clip)
+    {
+        _audio.clip = clip;
+        _audio.Play();
     }
 }
